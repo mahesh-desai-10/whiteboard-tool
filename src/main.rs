@@ -8,6 +8,7 @@ use axum::{
     routing::get,
 };
 use futures_util::{SinkExt, StreamExt};
+use std::env;
 use std::sync::Arc;
 use tokio::sync::broadcast;
 use tower_http::services::ServeDir;
@@ -19,15 +20,13 @@ struct AppState {
 }
 
 #[tokio::main]
+
 async fn main() {
     println!("Starting real-time whiteboard server...");
 
-    // Create a broadcast channel with a capacity of 100 messages.
     let (tx, _rx) = broadcast::channel(100);
-
     let app_state = Arc::new(AppState { tx });
 
-    // Serve static files from the "static" directory
     let static_files = ServeDir::new("static");
 
     let app = Router::new()
@@ -35,11 +34,16 @@ async fn main() {
         .route("/ws", get(ws_handler))
         .with_state(app_state);
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0")
-        // let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    // 🔥 IMPORTANT PART FOR RENDER
+    let port = env::var("PORT").unwrap_or_else(|_| "8080".to_string());
+
+    let addr = format!("0.0.0.0:{}", port);
+
+    println!("Listening on {}", addr);
+
+    let listener = tokio::net::TcpListener::bind(&addr)
         .await
-        .unwrap();
-    println!("Listening on {}", listener.local_addr().unwrap());
+        .expect("Failed to bind port");
 
     axum::serve(listener, app).await.unwrap();
 }
