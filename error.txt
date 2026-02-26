@@ -1,0 +1,88 @@
+    Checking webSocket v0.1.0 (C:\Users\mahes\Desktop\Project-Review\webSocket)
+error[E0432]: unresolved import `tower_http::trace`
+   --> src\main.rs:15:17
+    |
+ 15 | use tower_http::trace::TraceLayer;
+    |                 ^^^^^ could not find `trace` in `tower_http`
+    |
+note: found an item that was configured out
+   --> C:\Users\mahes\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tower-http-0.6.8\src\lib.rs:303:9
+    |
+302 | #[cfg(feature = "trace")]
+    |       ----------------- the item is gated behind the `trace` feature
+303 | pub mod trace;
+    |         ^^^^^
+
+warning: unused import: `stream::SplitSink`
+  --> src\main.rs:10:40
+   |
+10 | use futures_util::{SinkExt, StreamExt, stream::SplitSink};
+   |                                        ^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+warning: unused imports: `Deserialize` and `Serialize`
+  --> src\main.rs:11:13
+   |
+11 | use serde::{Deserialize, Serialize};
+   |             ^^^^^^^^^^^  ^^^^^^^^^
+
+warning: unused import: `collections::HashSet`
+  --> src\main.rs:12:11
+   |
+12 | use std::{collections::HashSet, sync::Arc};
+   |           ^^^^^^^^^^^^^^^^^^^^
+
+warning: unused import: `Mutex`
+  --> src\main.rs:13:30
+   |
+13 | use tokio::sync::{broadcast, Mutex};
+   |                              ^^^^^
+
+error[E0308]: mismatched types
+   --> src\main.rs:66:42
+    |
+ 66 |             if sender.send(Message::Text(msg)).await.is_err() {
+    |                            ------------- ^^^ expected `Utf8Bytes`, found `String`
+    |                            |
+    |                            arguments to this enum variant are incorrect
+    |
+note: tuple variant defined here
+   --> C:\Users\mahes\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\axum-0.8.8\src\extract\ws.rs:737:5
+    |
+737 |     Text(Utf8Bytes),
+    |     ^^^^
+help: call `Into::into` on this expression to convert `std::string::String` into `Utf8Bytes`
+    |
+ 66 |             if sender.send(Message::Text(msg.into())).await.is_err() {
+    |                                             +++++++
+
+error[E0308]: mismatched types
+   --> src\main.rs:77:29
+    |
+ 77 |             let _ = tx.send(text);
+    |                        ---- ^^^^ expected `String`, found `Utf8Bytes`
+    |                        |
+    |                        arguments to this method are incorrect
+    |
+help: the return type of this call is `Utf8Bytes` due to the type of the argument passed
+   --> src\main.rs:77:21
+    |
+ 77 |             let _ = tx.send(text);
+    |                     ^^^^^^^^----^
+    |                             |
+    |                             this argument influences the return type of `send`
+note: method defined here
+   --> C:\Users\mahes\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\tokio-1.49.0\src\sync\broadcast.rs:631:12
+    |
+631 |     pub fn send(&self, value: T) -> Result<usize, SendError<T>> {
+    |            ^^^^
+help: try using a conversion method
+    |
+ 77 |             let _ = tx.send(text.to_string());
+    |                                 ++++++++++++
+
+Some errors have detailed explanations: E0308, E0432.
+For more information about an error, try `rustc --explain E0308`.
+warning: `webSocket` (bin "webSocket") generated 4 warnings
+error: could not compile `webSocket` (bin "webSocket") due to 3 previous errors; 4 warnings emitted
